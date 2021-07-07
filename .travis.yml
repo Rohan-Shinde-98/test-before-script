@@ -1,0 +1,37 @@
+dist: focal
+os: linux
+cache: false
+git:
+  depth: false 
+
+language: node_js
+node_js: "12"
+
+before_script: 
+  - sudo apt-get install libsecret-1-dev
+  - |
+    if [[ "${TRAVIS_CPU_ARCH}" == "ppc64le" || "${TRAVIS_CPU_ARCH}" == "arm64" ]]
+    then
+      # fix cpu count to avoid OOM failure
+      cat /proc/stat > /tmp/stat
+      sed -i '/^cpu[4-9]/d' /tmp/stat
+      sed -i '/^cpu[0-9][0-9]/d' /tmp/stat
+      sudo mount --bind /tmp/stat /proc/stat
+    fi
+  
+jobs:
+  include: 
+    - &node-build
+      stage: PR Check
+      name: Node Build on amd64
+      script:
+        - node file.js
+    - <<: *node-build
+      name: Node Build on arm64
+      arch: arm64
+    - <<: *node-build
+      name: Node Build on ppc64le
+      arch: ppc64le
+    - <<: *node-build
+      name: Node Build on s390x
+      arch: s390x
