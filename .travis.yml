@@ -7,7 +7,7 @@ git:
 language: node_js
 node_js: "12"
 
-before_script: 
+before_install: 
   - sudo apt-get install libsecret-1-dev
   - |
     if [[ "${TRAVIS_CPU_ARCH}" == "ppc64le" || "${TRAVIS_CPU_ARCH}" == "arm64" ]]
